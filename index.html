@@ -164,7 +164,7 @@
     <p class="hero-text">Дорогие родные и близкие, мы женимся и мечтаем разделить с Вами этот день!</p>
   </section>
 
-  <!-- КАЛЕНДАРЬ — Август 2026, 1-е = суббота, 4-е = вторник -->
+  <!-- КАЛЕНДАРЬ -->
   <section id="calendar-sec">
     <p class="section-title">Дата торжества</p>
     <div class="calendar-grid">
@@ -371,21 +371,25 @@
     if (!name) { alert('Пожалуйста, введите ваше имя'); return; }
     if (!attend) { alert('Пожалуйста, укажите планируете ли вы присутствовать'); return; }
 
-    const attendText = attend.value === 'yes' ? 'придёт' : 'не придёт';
-    const message = `${name} - ${attendText}`;
+    const status = attend.value === 'yes' ? '✅ ПРИДЕТ' : '❌ НЕ ПРИДЕТ';
+    const message = `🔔 Ответ на приглашение:\n👤 Имя: ${name}\nСтатус: ${status}`;
 
-    // Отправка в Telegram (замените YOUR_BOT_TOKEN и YOUR_CHAT_ID)
-    const BOT_TOKEN = 'YOUR_BOT_TOKEN';
-    const CHAT_ID = 'YOUR_CHAT_ID';
+    // Интеграция твоего бота[cite: 1]
+    const BOT_TOKEN = '8616156984:AAGim0NmZKByrMK4th2N4l5Ob_93XPmSuL4';
+    const CHAT_ID = '459649598';
 
     fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: CHAT_ID, text: message })
-    }).catch(() => {}); // тихая ошибка если токен не настроен
-
-    document.getElementById('rsvpForm').style.display = 'none';
-    document.getElementById('successMsg').style.display = 'block';
+    })
+    .then(res => {
+      if (res.ok) {
+        document.getElementById('rsvpForm').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+      }
+    })
+    .catch(() => {});
   }
 </script>
 </body>
