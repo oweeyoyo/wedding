@@ -88,14 +88,6 @@
   #dresscode { background: var(--beige); }
   .dress-note { font-size: 15px; color: var(--text); max-width: 480px; margin: 0 auto; line-height: 1.9; font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; }
 
-  #organizer { background: var(--cream); }
-  .org-card { display: inline-block; background: var(--beige); border-radius: 16px; padding: 32px 40px; text-align: center; }
-  .org-avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--dark); color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
-  .org-name { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: var(--dark); margin-bottom: 4px; letter-spacing: 2px; text-transform: uppercase; }
-  .org-role { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
-  .org-btn { display: inline-block; padding: 12px 32px; background: var(--dark); color: var(--gold); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; text-decoration: none; border-radius: 100px; transition: opacity 0.2s; }
-  .org-btn:hover { opacity: 0.8; }
-
   #rsvp { background: var(--dark); }
   #rsvp .section-title { color: rgba(255,255,255,0.5); }
   .rsvp-subtitle { font-family: 'Cormorant Garamond', serif; font-size: 36px; color: var(--cream); margin-bottom: 40px; font-weight: 300; }
@@ -112,12 +104,6 @@
   .radio-item input:checked ~ .radio-dot { border-color: var(--gold); background: var(--gold); }
   .radio-item input:checked ~ .radio-dot::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--dark); display: block; }
   .radio-text { font-size: 13px; color: rgba(255,255,255,0.7); }
-  .checkbox-group { display: flex; flex-direction: column; gap: 10px; }
-  .checkbox-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-  .checkbox-item input[type="checkbox"] { display: none; }
-  .checkbox-box { width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .checkbox-item input:checked ~ .checkbox-box { background: var(--gold); border-color: var(--gold); }
-  .checkbox-item input:checked ~ .checkbox-box::after { content: '✓'; font-size: 11px; color: var(--dark); }
   .submit-btn { width: 100%; padding: 16px; background: var(--gold); color: var(--dark); border: none; border-radius: 100px; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 500; cursor: pointer; margin-top: 8px; transition: opacity 0.2s; }
   .submit-btn:hover { opacity: 0.85; }
   .success-msg { text-align: center; padding: 48px 24px; display: none; }
@@ -128,6 +114,10 @@
 </style>
 </head>
 <body>
+
+<audio id="bgMusic" preload="auto">
+  <source src="https://raw.githubusercontent.com/oweeyoyo/oweeyoyo/main/music.mp3" type="audio/mpeg">
+</audio>
 
 <!-- КОНВЕРТ -->
 <div id="envelope-screen">
@@ -218,9 +208,7 @@
   <!-- ТАЙМИНГ -->
 <section id="timeline-sec">
   <p class="section-title">Программа вечера</p>
-  
   <div class="timeline">
-    
     <div class="tl-item">
       <span class="tl-time">18:00</span>
       <div class="tl-dot"></div>
@@ -229,7 +217,6 @@
         Приветственные напитки и закуски
       </div>
     </div>
-
     <div class="tl-item">
       <span class="tl-time">19:00</span>
       <div class="tl-dot"></div>
@@ -238,7 +225,6 @@
         Торжественный банкет
       </div>
     </div>
-
   </div>
 </section>
 
@@ -337,7 +323,17 @@
 </div>
 
 <script>
-  document.getElementById('envBtn').addEventListener('click', function() {
+  const envBtn = document.getElementById('envBtn');
+  const bgMusic = document.getElementById('bgMusic');
+
+  envBtn.addEventListener('click', function() {
+    // ЗАПУСК МУЗЫКИ
+    bgMusic.play().then(() => {
+        console.log("Звук запущен успешно");
+    }).catch(e => {
+        console.log("Блокировка звука браузером", e);
+    });
+    
     document.getElementById('envelope-screen').classList.add('hidden');
     setTimeout(() => {
       document.getElementById('main-content').classList.add('visible');
@@ -366,15 +362,16 @@
   setInterval(updateCountdown, 1000);
 
   function submitRSVP() {
-    const name = document.getElementById('rsvp-name').value.trim();
+    const nameInput = document.getElementById('rsvp-name');
+    const name = nameInput.value.trim();
     const attend = document.querySelector('input[name="attend"]:checked');
+    
     if (!name) { alert('Пожалуйста, введите ваше имя'); return; }
     if (!attend) { alert('Пожалуйста, укажите планируете ли вы присутствовать'); return; }
 
     const status = attend.value === 'yes' ? '✅ ПРИДЕТ' : '❌ НЕ ПРИДЕТ';
     const message = `🔔 Ответ на приглашение:\n👤 Имя: ${name}\nСтатус: ${status}`;
 
-    // Интеграция твоего бота[cite: 1]
     const BOT_TOKEN = '8616156984:AAGim0NmZKByrMK4th2N4l5Ob_93XPmSuL4';
     const CHAT_ID = '459649598';
 
@@ -387,9 +384,13 @@
       if (res.ok) {
         document.getElementById('rsvpForm').style.display = 'none';
         document.getElementById('successMsg').style.display = 'block';
+      } else {
+        alert('Ошибка при отправке. Попробуйте еще раз.');
       }
     })
-    .catch(() => {});
+    .catch(() => {
+        alert('Проблемы с сетью. Проверьте соединение.');
+    });
   }
 </script>
 </body>
