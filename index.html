@@ -330,6 +330,10 @@
   // Блокируем скролл сразу при загрузке страницы
   document.body.classList.add('no-scroll');
 
+  // Блокируем тач-скролл на мобильных
+  function preventScroll(e) { e.preventDefault(); }
+  document.addEventListener('touchmove', preventScroll, { passive: false });
+
   envBtn.addEventListener('click', function() {
     // Запускаем музыку с 1:30
     bgMusic.currentTime = 90;
@@ -349,6 +353,7 @@
       document.getElementById('main-content').classList.add('visible');
       document.getElementById('envelope-screen').style.display = 'none';
       document.body.classList.remove('no-scroll');
+      document.removeEventListener('touchmove', preventScroll);
     }, 2000);
   });
 
