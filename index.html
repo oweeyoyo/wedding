@@ -327,7 +327,8 @@
   const bgMusic = document.getElementById('bgMusic');
 
   envBtn.addEventListener('click', function() {
-    // Запускаем музыку
+    // Запускаем музыку с 1:30
+    bgMusic.currentTime = 90;
     bgMusic.play().catch(e => console.log("Блокировка звука браузером", e));
 
     // Шаг 1: показываем открытый конверт
@@ -366,7 +367,6 @@
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  // ✅ Токен убран из кода — отправка идёт через Google Apps Script
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz6fYaxpp5VDiMArhSN_6Fi5oGjxQ-fVshGpAGRZutJfCEXnyjem9NRwoH9vtN00O1w/exec';
 
   function submitRSVP() {
