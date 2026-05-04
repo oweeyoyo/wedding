@@ -96,7 +96,7 @@
   .wish-text { font-size: 14px; color: var(--text); line-height: 1.7; }
 
   #dresscode { background: var(--beige); }
-  .dress-note { font-size: 15px; color: var(--text); max-width: 480px; margin: 0 auto; line-height: 1.9; font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; }
+  .dress-note { max-width: 480px; margin: 0 auto; line-height: 1.9; font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; }
 
   #rsvp { background: var(--dark); }
   #rsvp .section-title { color: rgba(255,255,255,0.5); }
@@ -116,6 +116,7 @@
   .radio-text { font-size: 13px; color: rgba(255,255,255,0.7); }
   .submit-btn { width: 100%; padding: 16px; background: var(--gold); color: var(--dark); border: none; border-radius: 100px; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 500; cursor: pointer; margin-top: 8px; transition: opacity 0.2s; }
   .submit-btn:hover { opacity: 0.85; }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .success-msg { text-align: center; padding: 48px 24px; display: none; }
   .success-msg .big-check { font-size: 48px; margin-bottom: 16px; }
   .success-msg p { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--gold); font-style: italic; }
@@ -216,27 +217,27 @@
   </section>
 
   <!-- ТАЙМИНГ -->
-<section id="timeline-sec">
-  <p class="section-title">Программа вечера</p>
-  <div class="timeline">
-    <div class="tl-item">
-      <span class="tl-time">18:00</span>
-      <div class="tl-dot"></div>
-      <div class="tl-text">
-        <strong>Фуршет</strong>
-        Приветственные напитки и закуски
+  <section id="timeline-sec">
+    <p class="section-title">Программа вечера</p>
+    <div class="timeline">
+      <div class="tl-item">
+        <span class="tl-time">18:00</span>
+        <div class="tl-dot"></div>
+        <div class="tl-text">
+          <strong>Фуршет</strong>
+          Приветственные напитки и закуски
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-time">19:00</span>
+        <div class="tl-dot"></div>
+        <div class="tl-text">
+          <strong>Праздничный ужин</strong>
+          Торжественный банкет
+        </div>
       </div>
     </div>
-    <div class="tl-item">
-      <span class="tl-time">19:00</span>
-      <div class="tl-dot"></div>
-      <div class="tl-text">
-        <strong>Праздничный ужин</strong>
-        Торжественный банкет
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
   <!-- ОБРАТНЫЙ ОТСЧЁТ -->
   <section id="countdown-sec">
@@ -275,8 +276,7 @@
       </div>
       <div class="wish-card">
         <div class="wish-num">03</div>
-        <p class="wish-text">Мы будем рады, если вы сохраните самые тёплые моменты этого дня и поделитесь ими с нами, используя хештег
-#свадьбадиёрмилана</p>
+        <p class="wish-text">Мы будем рады, если вы сохраните самые тёплые моменты этого дня и поделитесь ими с нами, используя хештег #свадьбадиёрмилана</p>
       </div>
       <div class="wish-card">
         <div class="wish-num">04</div>
@@ -320,7 +320,7 @@
           </label>
         </div>
       </div>
-      <button class="submit-btn" onclick="submitRSVP()">Подтвердить присутствие</button>
+      <button class="submit-btn" id="submitBtn" onclick="submitRSVP()">Подтвердить присутствие</button>
     </div>
     <div class="success-msg" id="successMsg">
       <div class="big-check">🤍</div>
@@ -337,12 +337,7 @@
   const bgMusic = document.getElementById('bgMusic');
 
   envBtn.addEventListener('click', function() {
-    bgMusic.play().then(() => {
-        console.log("Звук запущен успешно");
-    }).catch(e => {
-        console.log("Блокировка звука браузером", e);
-    });
-    
+    bgMusic.play().catch(e => console.log("Блокировка звука браузером", e));
     document.getElementById('envelope-screen').classList.add('hidden');
     setTimeout(() => {
       document.getElementById('main-content').classList.add('visible');
@@ -370,35 +365,42 @@
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
+  // ✅ Токен убран из кода — отправка идёт через Google Apps Script
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzgINjAB-akiVfTFi6pbZApgQ2ntq71AcFHwd8QUAwaTO0MMyw1h57w8L2_OGpFbrMK/exec';
+
   function submitRSVP() {
-    const nameInput = document.getElementById('rsvp-name');
-    const name = nameInput.value.trim();
+    const name = document.getElementById('rsvp-name').value.trim();
     const attend = document.querySelector('input[name="attend"]:checked');
-    
+
     if (!name) { alert('Пожалуйста, введите ваше имя'); return; }
     if (!attend) { alert('Пожалуйста, укажите планируете ли вы присутствовать'); return; }
 
     const status = attend.value === 'yes' ? '✅ ПРИДЕТ' : '❌ НЕ ПРИДЕТ';
-    const message = `🔔 Ответ на приглашение:\n👤 Имя: ${name}\nСтатус: ${status}`;
 
-    const BOT_TOKEN = '8616156984:AAGim0NmZKByrMK4th2N4l5Ob_93XPmSuL4';
-    const CHAT_ID = '459649598';
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Отправляем...';
 
-    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    fetch(SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: CHAT_ID, text: message })
+      body: JSON.stringify({ name, status })
     })
-    .then(res => {
-      if (res.ok) {
+    .then(res => res.json())
+    .then(data => {
+      if (data.ok) {
         document.getElementById('rsvpForm').style.display = 'none';
         document.getElementById('successMsg').style.display = 'block';
       } else {
-        alert('Ошибка при отправке. Попробуйте еще раз.');
+        alert('Ошибка при отправке. Попробуйте ещё раз.');
+        btn.disabled = false;
+        btn.textContent = 'Подтвердить присутствие';
       }
     })
     .catch(() => {
-        alert('Проблемы с сетью. Проверьте соединение.');
+      alert('Проблемы с сетью. Проверьте соединение.');
+      btn.disabled = false;
+      btn.textContent = 'Подтвердить присутствие';
     });
   }
 </script>
