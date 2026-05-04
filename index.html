@@ -29,6 +29,7 @@
   }
   html { scroll-behavior: smooth; }
   body { font-family: 'Montserrat', sans-serif; background: var(--cream); color: var(--text); overflow-x: hidden; }
+  body.no-scroll { overflow: hidden; }
 
   #envelope-screen {
     position: fixed; inset: 0; background: var(--cream);
@@ -326,6 +327,9 @@
   const envBtn = document.getElementById('envBtn');
   const bgMusic = document.getElementById('bgMusic');
 
+  // Блокируем скролл сразу при загрузке страницы
+  document.body.classList.add('no-scroll');
+
   envBtn.addEventListener('click', function() {
     // Запускаем музыку с 1:30
     bgMusic.currentTime = 90;
@@ -340,10 +344,11 @@
       document.getElementById('envelope-screen').classList.add('hidden');
     }, 1200);
 
-    // Шаг 3: показываем приглашение
+    // Шаг 3: показываем приглашение и разблокируем скролл
     setTimeout(() => {
       document.getElementById('main-content').classList.add('visible');
       document.getElementById('envelope-screen').style.display = 'none';
+      document.body.classList.remove('no-scroll');
     }, 2000);
   });
 
