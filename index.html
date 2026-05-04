@@ -383,19 +383,13 @@
 
     fetch(SCRIPT_URL, {
       method: 'POST',
+      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, status })
     })
-    .then(res => res.json())
-    .then(data => {
-      if (data.ok) {
-        document.getElementById('rsvpForm').style.display = 'none';
-        document.getElementById('successMsg').style.display = 'block';
-      } else {
-        alert('Ошибка при отправке. Попробуйте ещё раз.');
-        btn.disabled = false;
-        btn.textContent = 'Подтвердить присутствие';
-      }
+    .then(() => {
+      document.getElementById('rsvpForm').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
     })
     .catch(() => {
       alert('Проблемы с сетью. Проверьте соединение.');
