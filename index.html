@@ -33,13 +33,17 @@
   #envelope-screen {
     position: fixed; inset: 0; background: var(--cream);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    z-index: 999; transition: opacity 0.8s ease, transform 0.8s ease;
+    z-index: 999; transition: opacity 1s ease;
   }
-  #envelope-screen.hidden { opacity: 0; pointer-events: none; transform: translateY(-40px); }
-  .envelope-hint { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 32px; }
-  .envelope-wrap { cursor: pointer; width: 220px; height: 160px; transition: transform 0.3s; }
-  .envelope-wrap:hover { transform: scale(1.04); }
-  .envelope-wrap svg { width: 100%; height: 100%; }
+  #envelope-screen.hidden { opacity: 0; pointer-events: none; }
+  .envelope-hint { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; }
+  .envelope-wrap { cursor: pointer; width: 320px; transition: transform 0.3s; position: relative; }
+  .envelope-wrap:hover { transform: scale(1.03); }
+  .envelope-wrap img { width: 100%; display: block; }
+  #env-closed { opacity: 1; transition: opacity 0.6s ease; }
+  #env-open { position: absolute; top: 0; left: 0; width: 100%; opacity: 0; transition: opacity 0.6s ease; }
+  #env-open.visible { opacity: 1; }
+  #env-closed.hidden-img { opacity: 0; }
 
   #main-content { opacity: 0; transition: opacity 1s ease; pointer-events: none; }
   #main-content.visible { opacity: 1; pointer-events: all; }
@@ -135,18 +139,8 @@
   <p class="envelope-hint">Нажмите на конверт</p>
   <p style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--muted);margin-bottom:32px;font-style:italic;">Вам приглашение...</p>
   <div class="envelope-wrap" id="envBtn">
-    <svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg">
-      <rect x="4" y="40" width="212" height="116" rx="6" fill="#EDE5D8"/>
-      <polygon points="4,156 110,92 216,156" fill="#E2D8C9"/>
-      <polygon points="4,40 4,156 110,92" fill="#DDD3C4"/>
-      <polygon points="216,40 216,156 110,92" fill="#DDD3C4"/>
-      <polygon points="4,40 216,40 110,105" fill="#C9A96E" opacity="0.85"/>
-      <circle cx="110" cy="98" r="18" fill="#2C2822"/>
-      <text x="110" y="104" text-anchor="middle" font-family="serif" font-size="16" fill="#C9A96E">&#9825;</text>
-      <line x1="30" y1="130" x2="88" y2="130" stroke="#C9A96E" stroke-width="0.5" opacity="0.5"/>
-      <line x1="132" y1="130" x2="190" y2="130" stroke="#C9A96E" stroke-width="0.5" opacity="0.5"/>
-      <text x="110" y="134" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#8A7B6E" letter-spacing="2">ДИЁР &amp; МИЛАНА</text>
-    </svg>
+    <img id="env-closed" src="https://raw.githubusercontent.com/oweeyoyo/wedding/main/konvert-closed.png" alt="конверт закрытый">
+    <img id="env-open" src="https://raw.githubusercontent.com/oweeyoyo/wedding/main/konvert-open.png" alt="конверт открытый">
   </div>
 </div>
 
@@ -333,12 +327,23 @@
   const bgMusic = document.getElementById('bgMusic');
 
   envBtn.addEventListener('click', function() {
+    // Запускаем музыку
     bgMusic.play().catch(e => console.log("Блокировка звука браузером", e));
-    document.getElementById('envelope-screen').classList.add('hidden');
+
+    // Шаг 1: показываем открытый конверт
+    document.getElementById('env-closed').classList.add('hidden-img');
+    document.getElementById('env-open').classList.add('visible');
+
+    // Шаг 2: через 1.2с скрываем весь экран конверта
+    setTimeout(() => {
+      document.getElementById('envelope-screen').classList.add('hidden');
+    }, 1200);
+
+    // Шаг 3: показываем приглашение
     setTimeout(() => {
       document.getElementById('main-content').classList.add('visible');
       document.getElementById('envelope-screen').style.display = 'none';
-    }, 800);
+    }, 2000);
   });
 
   function updateCountdown() {
